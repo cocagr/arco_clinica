@@ -1,21 +1,41 @@
-import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, useWindowDimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, useWindowDimensions, ImageBackground } from 'react-native';
 import { COLORS, FONTS } from '../constants/theme';
+
+const backgroundImages = [
+  'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=2000&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=2000&auto=format&fit=crop'
+];
 
 export default function Hero() {
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => 
+        prevIndex === backgroundImages.length - 1 ? 0 : prevIndex + 1
+      );
+    }, 7500);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <View style={[styles.hero, isMobile && styles.heroMobile]}>
-      <View style={styles.heroTextContainer}>
-        <Text style={styles.heroTitle}>Salud Integral & Bienestar</Text>
-        <Text style={styles.slogan}>Cuidamos lo que te mueve</Text>
+    <ImageBackground 
+      source={{ uri: backgroundImages[currentImageIndex] }} 
+      style={[styles.hero, isMobile && styles.heroMobile]}
+      resizeMode="cover"
+      imageStyle={{ transition: 'all 1s ease-in-out' }}
+    >
+      <View style={[styles.contentBubble, isMobile && styles.contentBubbleMobile]}>
+        <Text style={styles.heroTitle}>Cuidamos lo que te mueve</Text>
+        <Text style={styles.slogan}>Especialistas en el manejo integral de salud y riesgo cardiovascular.</Text>
         <Text style={styles.heroDescription}>
-          Un espacio médico pensado para ofrecerte un diagnóstico preciso y una atención personalizada con el máximo confort.
+          
         </Text>
         
-        <View style={styles.buttonGroup}>
+        <View style={[styles.buttonGroup, isMobile && styles.buttonGroupMobile]}>
           <TouchableOpacity style={styles.btnPrimaryLarge}>
             <Text style={styles.btnPrimaryText}>Solicitar Cita Online</Text>
           </TouchableOpacity>
@@ -24,37 +44,48 @@ export default function Hero() {
           </TouchableOpacity>
         </View>
       </View>
-
-      <View style={styles.imagePlaceholder}>
-        <Text style={styles.placeholderText}>[ Fotografía Recepción / Sala de Espera ]</Text>
-      </View>
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   hero: {
-    flexDirection: 'row',
+    width: '100%',
+    minHeight: 550,
     paddingHorizontal: '5%',
     paddingVertical: 60,
-    alignItems: 'center',
-    gap: 40,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
   },
   heroMobile: {
-    flexDirection: 'column',
+    alignItems: 'center',
+    paddingHorizontal: '3%',
+    minHeight: 450,
   },
-  heroTextContainer: {
-    flex: 1,
+  contentBubble: {
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    padding: 40,
+    borderRadius: 16,
+    maxWidth: 650,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 15,
+    elevation: 5,
   },
-  heroTitle: {
+  contentBubbleMobile: {
+    padding: 25,
+    width: '100%',
+  },
+  slogan: {
     fontFamily: FONTS.light,
-    fontSize: 40,
+    fontSize: 24,
     color: COLORS.textoOscuro,
     marginBottom: 8,
   },
-  slogan: {
+  heroTitle: {
     fontFamily: FONTS.italic,
-    fontSize: 26,
+    fontSize: 40,
     color: COLORS.verdeOscuro,
     marginBottom: 16,
   },
@@ -70,11 +101,16 @@ const styles = StyleSheet.create({
     gap: 15,
     flexWrap: 'wrap',
   },
+  buttonGroupMobile: {
+    flexDirection: 'column',
+    width: '100%',
+  },
   btnPrimaryLarge: {
     backgroundColor: COLORS.verdePiedra,
     paddingVertical: 14,
     paddingHorizontal: 28,
     borderRadius: 4,
+    alignItems: 'center',
   },
   btnPrimaryText: {
     color: COLORS.blanco,
@@ -89,6 +125,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 28,
     borderRadius: 4,
+    alignItems: 'center',
   },
   btnOutlineText: {
     color: COLORS.textoOscuro,
@@ -96,18 +133,5 @@ const styles = StyleSheet.create({
     fontSize: 13,
     letterSpacing: 1,
     textTransform: 'uppercase',
-  },
-  imagePlaceholder: {
-    flex: 1,
-    height: 380,
-    backgroundColor: COLORS.maderaSuave,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-  },
-  placeholderText: {
-    fontFamily: FONTS.regular,
-    color: COLORS.textoSuave,
   },
 });

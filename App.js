@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, SafeAreaView, ScrollView } from 'react-native';
+import React, { useRef } from 'react';
+import { StyleSheet, SafeAreaView, Animated, View, useWindowDimensions } from 'react-native';
 import { 
   useFonts, 
   Jost_300Light, 
@@ -16,6 +16,9 @@ import Hero from './components/Hero';
 import Specialities from './components/Specialities';
 
 export default function App() {
+  const { height } = useWindowDimensions();
+  const scrollY = useRef(new Animated.Value(0)).current;
+
   const [fontsLoaded] = useFonts({
     Jost_300Light,
     Jost_400Regular,
@@ -29,11 +32,20 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Header />
+      <Header scrollY={scrollY} />
+
+      <Animated.ScrollView 
+        contentContainerStyle={styles.scrollContainer}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: false }
+        )}
+        scrollEventThrottle={16}
+      >
+        <View style={{ height: height, width: '100%', backgroundColor: COLORS.fondoCrema }} />
         <Hero />
         <Specialities />
-      </ScrollView>
+      </Animated.ScrollView>
     </SafeAreaView>
   );
 }
